@@ -3,8 +3,17 @@ import {userRoutes} from "./modules/users/users.route";
 import {authRoutes} from "./modules/auth/auth.route";
 import {profileRoute} from "./modules/profile/profile.route";
 import {logger} from "./middlewares/logger";
+import {globalErrorHandler} from "./middlewares/globalErrorHandler";
+import cors from 'cors'
+
 
 export const app: Application = express()
+
+const corsOptions = {
+    origin: ["http://localhost:3000"],
+    optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 
 app.use(express.json())
 app.use(logger)
@@ -18,3 +27,5 @@ app.get("/",(req: Request, res:Response)  => {
         message: 'this is root route'
     })
 } )
+
+app.use(globalErrorHandler)
