@@ -16,6 +16,7 @@ try {
         password VARCHAR(255) NOT NULL,
         age INT,
         is_active BOOLEAN DEFAULT true,  
+        role VARCHAR(10) DEFAULT 'user' NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
     )

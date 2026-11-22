@@ -1,18 +1,18 @@
 import type {IUser} from "./user.interface";
 import bcrypt from "bcryptjs"
 import {pool} from "../../db";
-import {getRawAsset} from "node:sea";
+
 
  export const createUserIntoDB = async (payload: IUser) => {
-    const {name, email, password, age } = payload
+    const {name, email, password, age, role } = payload
 
      const hashPassword = await bcrypt.hash(password, 10)
      // console.log(hashPassword)
 
      const result = await pool.query(`
-     INSERT INTO users (name,email,password,age) VALUES 
-    ($1,$2,$3,$4) RETURNING *
-     `, [name,email,hashPassword, age])
+     INSERT INTO users (name,email,password,age, role) VALUES 
+    ($1,$2,$3,$4, COALESCE($5, 'user')) RETURNING *
+     `, [name,email,hashPassword, age, role])
      console.log(result);
     delete result.rows[0].password
      return result
