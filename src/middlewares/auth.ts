@@ -4,45 +4,60 @@ import {config} from "../config";
 import {pool} from "../db";
 import type {Role} from "../types";
 
-export const auth = (...role: Role[]) => {
+export const auth = (...roles: Role[]) => {
     // console.log(role)
     return async (req: Request, res: Response, next: NextFunction) => {
         // console.log(req.headers.authorization);
-        const token = req.headers.authorization?.split(" ")[1]
+try{
+    const token = req.headers.authorization?.split(" ")[1]
 
-        if(!token){
-            return res.status(401).json({
-                success:false,
-                message: "Unauthorized access"
-            })
-        }
+    if(!token){
+        return res.status(401).json({
+            success:false,
+            message: "Unauthorized access"
+        })
+    }
 
-        const decode = jwt.verify(token, config.jwt_secret) as JwtPayload
-        // console.log(decode);
+    const decode = jwt.verify(token, config.jwt_secret) as JwtPayload
+    // console.log(decode);
 
-        const user = await pool.query(`
+    const user = await pool.query(`
         SELECT * FROM users WHERE email=$1
         `, [decode.email])
 
-        if (user.rowCount === 0){
-            return res.status(404).json({
-                success:false,
-                message: "User not found!!"
-            })
-        }
+    if (user.rowCount === 0){
+        return res.status(404).json({
+            success:false,
+            message: "User not found!!"
+        })
+    }
 
-        if (!user.rows[0].is_active) {
-            return res.status(403).json({
-                success:false,
-                message: "Forbidden!!"
-            })
-        }
+    if (!user.rows[0].is_active) {
+        return res.status(403).json({
+            success:false,
+            message: "Forbidden!!"
+        })
+    }
 
-        req.user = decode
-        // console.log(req);
+    if (roles.length && !roles.includes(user.rows[0].role)){
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized access"
+        })
+    }
+
+    req.user = decode
+    // console.log(req);
 
 
-        next()
+    next()
+} catch (error) {
+    console.log(error)
+    return res.status(401).json({
+        success: false,
+        message: "Invalid or expired token"
+    })
+}
     }
 
 }
