@@ -2,6 +2,7 @@ import {getRawAsset} from "node:sea";
 import {pool} from "../../db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import {config} from "../../config";
 
 const loginUserIntoDB = async (payload: {
     email: string,
@@ -32,7 +33,7 @@ const {email, password} = payload
         email: user.rows[0].email,
     }
 
-    const accessToken = jwt.sign(jwtPayload, 'hsfglsdhbld',{
+    const accessToken = jwt.sign(jwtPayload, config.jwt_secret ,{
         expiresIn: "1d",
     })
 

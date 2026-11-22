@@ -22,7 +22,7 @@ export const logger = (req: Request, res: Response, next: NextFunction) => {
     const log = `\nMethod : ${req.method} | URL : ${req.url} | Time : ${formatDateTime(new Date())}\n`
 
     fs.appendFile("logger.txt", log, (err) => {
-        console.log(err)
+        // console.log(err)
     })
     next()
 }
