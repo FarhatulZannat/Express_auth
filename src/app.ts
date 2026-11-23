@@ -5,6 +5,8 @@ import {profileRoute} from "./modules/profile/profile.route";
 import {logger} from "./middlewares/logger";
 import {globalErrorHandler} from "./middlewares/globalErrorHandler";
 import cors from 'cors'
+import  cookieParser from "cookie-parser";
+
 
 
 export const app: Application = express()
@@ -14,6 +16,7 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
+app.use(cookieParser())
 
 app.use(express.json())
 app.use(logger)
